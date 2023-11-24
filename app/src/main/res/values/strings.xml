@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Bubble Level</string>
+    <string name="want_to_calibrate_lever">Muốn hiệu chuẩn cấp độ?</string>
+    <string name="place_your_device">Đặt thiết bị của bạn trên một bề mặt phẳng và nhấn vào "Hiệu chuẩn". Nhấn "Đặt lại" sẽ khôi phục về cài đặt mặc định của hệ thống</string>
+    <string name="reset">Đặt lại</string>
+    <string name="calibrate">Hiệu chuẩn</string>
+
 </resources>

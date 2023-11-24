@@ -1,27 +1,18 @@
 package dong.duan.bubblelevel
 
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import dong.duan.bubblelevel.databinding.ActivityMainBinding
+import kotlin.math.abs
 
-import dong.duan.bubblelevel.widget.CricleView
-import dong.duan.bubblelevel.widget.RectangleVeritcalView
-import dong.duan.bubblelevel.widget.RectangleView
 
-class MainActivity : AppCompatActivity(), SensorEventListener {
-
-    lateinit var binding: ActivityMainBinding
-    private lateinit var cricleViewDemo: CricleView
-    private lateinit var rectangleView: RectangleView
-
-    private lateinit var rectangleView2: RectangleVeritcalView
-
+class BubbleActivity : AppCompatActivity(), SensorEventListener {
     private var sensorManager: SensorManager? = null
 
     private var mSensor: Sensor? = null
@@ -38,20 +29,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private val alpha = 0.96f
     private val updateInterval = 10 //mills
 
-    private lateinit var txtX: TextView
-    private lateinit var txtY: TextView
-    var withCricle=0
-    var rectangleWith= 0
+    val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        cricleViewDemo= findViewById(R.id.acm_view)
-        rectangleView= findViewById(R.id.rectangles)
-        rectangleView2= findViewById(R.id.rectangles2)
-        txtX= findViewById(R.id.tv_x)
-        txtY= findViewById(R.id.tv_y)
 
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
 
@@ -60,9 +44,38 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         rSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
         gSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_GRAVITY)
 
-        Toast.makeText(applicationContext, "$withCricle -- $rectangleWith", Toast.LENGTH_SHORT).show()
 
+
+        binding.capture.setOnClickListener {
+            CalibrateDialog(this@BubbleActivity, object : OnCalibrateEvent {
+                override fun onCalibrate() {
+                    currentPitch= newx
+                    currentRoll=newy
+                }
+                override fun onReset() {
+                    currentPitch=0f
+                    currentRoll =0f
+                }
+            }).show()
+        }
+
+        binding.freeze.setOnClickListener {
+            if(isFrezee){
+                binding.freeze.setColorFilter(Color.parseColor("#87C4FF"))
+                isFrezee=false
+            }
+            else{
+                binding.freeze.setColorFilter(Color.parseColor("#ffffff"))
+                isFrezee = true
+            }
+        }
     }
+
+    var currentPitch = 0f
+    var currentRoll = 0f
+    var pitch = 0f
+    var roll = 0f
+
 
     override fun onSensorChanged(event: SensorEvent?) {
 
@@ -78,27 +91,27 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                         updateOrientation(time)
                     }
                 }
-
-
                 if (mEvent.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                     if (mEvent.sensor.type == Sensor.TYPE_GRAVITY) {
                         if (gSensor == null) {
-                            gravity[0] = this.alpha * gravity[0] + (1 - this.alpha) * mEvent.values[0]
-                            gravity[1] = this.alpha * gravity[1] + (1 - this.alpha) * mEvent.values[1]
-                            gravity[2] = this.alpha * gravity[2] + (1 - this.alpha) * mEvent.values[2]
+                            gravity[0] =
+                                this.alpha * gravity[0] + (1 - this.alpha) * mEvent.values[0]
+                            gravity[1] =
+                                this.alpha * gravity[1] + (1 - this.alpha) * mEvent.values[1]
+                            gravity[2] =
+                                this.alpha * gravity[2] + (1 - this.alpha) * mEvent.values[2]
                             updateOrientation(time)
                         }
                     }
-
                 }
-
                 if (mEvent.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
 
-                    geomagnetic[0] = this.alpha * geomagnetic[0] + (1 - this.alpha) * mEvent.values[0]
-                    geomagnetic[1] = this.alpha * geomagnetic[1] + (1 - this.alpha) * mEvent.values[1]
-                    geomagnetic[2] = this.alpha * geomagnetic[2] + (1 - this.alpha) * mEvent.values[2]
-
-
+                    geomagnetic[0] =
+                        this.alpha * geomagnetic[0] + (1 - this.alpha) * mEvent.values[0]
+                    geomagnetic[1] =
+                        this.alpha * geomagnetic[1] + (1 - this.alpha) * mEvent.values[1]
+                    geomagnetic[2] =
+                        this.alpha * geomagnetic[2] + (1 - this.alpha) * mEvent.values[2]
                 }
             }
 
@@ -125,42 +138,34 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     }
 
+    var newx = 0f
+    var newy = 0f
+
+    var isFrezee = true
+
     private fun updateOrientation(time: Long) {
         if (SensorManager.getRotationMatrix(rotationMatrixR, null, gravity, geomagnetic)) {
             orientation = SensorManager.getOrientation(rotationMatrixR, orientation)
             if (time - accelerometerPrevTime > updateInterval) {
                 Math.toDegrees(orientation[0].toDouble()).toFloat()  //azimuth
-                Math.toDegrees(orientation[1].toDouble()).toFloat()  //pitch
-                Math.toDegrees(orientation[2].toDouble()).toFloat() //roll
+                pitch = Math.toDegrees(orientation[1].toDouble()).toFloat() + currentPitch
+                roll = Math.toDegrees(orientation[2].toDouble()).toFloat() + currentRoll
                 accelerometerPrevTime = time
+                if (isFrezee) {
+                    newx = pitch
+                    newy = roll
+                    binding.acmView.updateOrientation(pitch, roll)
+                    binding.rectanglesHor.updateOrientation(pitch, roll)
+                    binding.rectanglesVer.updateOrientation(pitch, roll)
+                } else {
 
+                    binding.acmView.updateOrientation(newx, newy)
+                    binding.rectanglesHor.updateOrientation(newx, newy)
+                    binding.rectanglesVer.updateOrientation(newx, newy)
+                }
 
-
-                var tisoW=0f
-//                if(withCricle>rectangleWith){
-//                    tisoW=  (withCricle/rectangleWith).toFloat()
-//                }
-//                else{
-//                    tisoW= (rectangleWith/withCricle).toFloat()
-//                }
-
-
-                cricleViewDemo.updateOrientation(
-                    Math.toDegrees(orientation[1].toDouble()).toFloat(),
-                    Math.toDegrees(orientation[2].toDouble()).toFloat()
-                )
-                rectangleView.updateOrientation(
-                    Math.toDegrees(orientation[1].toDouble()).toFloat(),
-                    Math.toDegrees(orientation[2].toDouble()).toFloat()
-                )
-
-                rectangleView2.updateOrientation(
-                    Math.toDegrees(orientation[1].toDouble()).toFloat(),
-                    Math.toDegrees(orientation[2].toDouble()).toFloat()
-                )
-
-                txtX.setText("X: "+ Math.toDegrees(orientation[1].toDouble()).toString().replace("-","").substring(0,5))
-                txtY.setText("Y: "+Math.toDegrees(orientation[2].toDouble()).toString().replace("-","").substring(0,5))
+                binding.tvX.setText("X: " + String.format("%.2f", abs(pitch)) + "°")
+                binding.tvY.setText("Y: " + String.format("%.2f", abs(roll)) + "°")
             }
         }
     }
@@ -178,5 +183,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private fun notSupported() {
         Toast.makeText(this, "Sensors Not Supported in this device", Toast.LENGTH_SHORT).show()
     }
+
 
 }

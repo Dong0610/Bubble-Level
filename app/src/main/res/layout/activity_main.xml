@@ -3,25 +3,77 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#000"
+    android:paddingTop="@dimen/_30sdp"
+    android:background="@color/black"
+    android:paddingBottom="@dimen/_30sdp"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".BubbleActivity">
 
-    <dong.duan.bubblelevel.widget.RectangleVeritcalView
-        android:id="@+id/rectangles2"
-        android:layout_width="40dp"
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="44sp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="@dimen/_32sdp"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintBottom_toTopOf="@+id/ctn_setting"
+        tools:layout_editor_absoluteX="44dp">
+
+
+        <TextView
+            android:id="@+id/tv_x"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_text_view"
+            android:gravity="center"
+            android:paddingVertical="12dp"
+            android:text="16"
+            android:textColor="#9ECE1C"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/acm_view" />
+
+        <TextView
+            android:id="@+id/tv_y"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_text_view"
+            android:gravity="center"
+            android:paddingVertical="12dp"
+            android:text="16"
+            android:textColor="#9ECE1C"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_x" />
+    </LinearLayout>
+
+    <dong.duan.bubblelevel.widget.VerticalView
+        android:id="@+id/rectanglesVer"
+        android:layout_width="@dimen/_36sdp"
         android:layout_height="0dp"
-        android:layout_margin="50dp"
-        app:layout_constraintBottom_toTopOf="@+id/tv_x"
+        android:layout_margin="@dimen/_30sdp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toStartOf="@+id/acm_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rectangles" />
+        app:layout_constraintTop_toBottomOf="@+id/rectanglesHor" />
 
-    <dong.duan.bubblelevel.widget.RectangleView
+    <dong.duan.bubblelevel.widget.HorizontalView
+        android:id="@+id/rectanglesHor"
         android:layout_width="match_parent"
-        android:id="@+id/rectangles"
-        android:layout_height="40dp"
-        android:layout_margin="50dp"
+        android:layout_height="@dimen/_36sdp"
+        android:layout_marginHorizontal="@dimen/_40sdp"
+        android:layout_marginTop="@dimen/_40sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,38 +81,42 @@
 
     <dong.duan.bubblelevel.widget.CricleView
         android:id="@+id/acm_view"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="@dimen/_180sdp"
+        android:layout_height="@dimen/_180sdp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/rectanglesHor" />
 
-    <TextView
-        android:id="@+id/tv_x"
-        android:layout_marginVertical="40dp"
-        android:layout_marginHorizontal="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="16"
-        android:textColor="@color/white"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/acm_view" />
 
-    <TextView
-        android:id="@+id/tv_y"
+    <LinearLayout
+        android:id="@+id/ctn_setting"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="50dp"
-        android:layout_marginVertical="20dp"
-        android:text="16"
-        android:textColor="@color/white"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_x" />
+        android:layout_height="@dimen/_42sdp"
+        android:layout_marginHorizontal="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_16sdp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/capture"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/ic_capture" />
+
+        <ImageView
+            android:id="@+id/freeze"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/ic_freeze" />
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
